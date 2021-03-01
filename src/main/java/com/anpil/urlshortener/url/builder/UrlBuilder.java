@@ -3,12 +3,21 @@ package com.anpil.urlshortener.url.builder;
 import java.net.MalformedURLException;
 import java.net.URL;
 
+/**
+ * Builder for {@link URL}.
+ */
 public class UrlBuilder {
 
     private String protocol;
     private String host;
     private String file;
 
+    /**
+     * Creates a builder instance using fields of a given {@link URL}.
+     *
+     * @param url {@link URL} with fields used to create a {@link UrlBuilder} instance
+     * @return Instance of {@link UrlBuilder}
+     */
     public static UrlBuilder from(URL url) {
         UrlBuilder builder = new UrlBuilder();
         builder.protocol = url.getProtocol();
@@ -32,6 +41,12 @@ public class UrlBuilder {
         return this;
     }
 
+    /**
+     * Creates a {@link URL} with the fields of this {@link UrlBuilder}
+     *
+     * @return Created {@link URL}
+     * @throws RuntimeException when an error occurred creating the {@link URL}
+     */
     public URL build() {
         try {
             return new URL(protocol, host, file);

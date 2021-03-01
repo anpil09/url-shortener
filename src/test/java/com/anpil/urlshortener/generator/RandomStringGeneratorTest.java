@@ -1,11 +1,10 @@
 package com.anpil.urlshortener.generator;
 
-import static com.anpil.urlshortener.testsupport.TestUtil.*;
-
-import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static com.anpil.urlshortener.testsupport.TestUtil.checkAlphanumericString;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
 
 public class RandomStringGeneratorTest {
 

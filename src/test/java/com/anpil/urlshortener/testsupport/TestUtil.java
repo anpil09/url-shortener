@@ -11,6 +11,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 public class TestUtil {
 
     private static final int EXPECTED_STRING_LENGTH = 4;
+
     public static void checkAlphanumericString(String result) {
         assertEquals(EXPECTED_STRING_LENGTH, result.length());
         for (char character : result.toCharArray()) {
@@ -25,9 +26,8 @@ public class TestUtil {
     }
 
     private static boolean isAsciiLetterOrDigit(char character) {
-        return (character >= 'a' && character <= 'z')
-                || (character >= 'A' && character <= 'Z')
-                || (character >= '0' && character <= '9');
+        return (character >= 'a' && character <= 'z') || (character >= 'A' && character <= 'Z') ||
+                (character >= '0' && character <= '9');
     }
 
     public static void checkProtocolAndHost(URL result) {

@@ -1,9 +1,9 @@
 package com.anpil.urlshortener.util;
 
-import static com.anpil.urlshortener.util.StringUtil.*;
-import static org.junit.jupiter.api.Assertions.*;
-
 import org.junit.Test;
+
+import static com.anpil.urlshortener.util.StringUtil.precedeWithSlash;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class StringUtilTest {
 
