@@ -10,11 +10,11 @@ import java.net.URL;
 public interface UrlFactory {
 
     /**
-     * Creates shortened {@link URL} with a file as a member of a monotonically increasing sequence of integers.
+     * Creates shortened URL with a file as a member of a monotonically increasing sequence of integers.
      *
-     * @param originalUrl Original {@link URL}
-     * @return Shortened {@link URL}
+     * @param urlString Original URL
+     * @return Shortened URL
      */
-    URL createWithSequenceNumberPath(URL originalUrl);
+    String createWithSequenceNumberPath(String urlString);
 
 }

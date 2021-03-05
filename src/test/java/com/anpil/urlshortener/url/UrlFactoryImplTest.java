@@ -5,13 +5,13 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.net.MalformedURLException;
-import java.net.URL;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static com.anpil.urlshortener.testsupport.TestConstant.*;
 import static com.anpil.urlshortener.testsupport.TestUtil.checkNumberSequence;
+import static com.anpil.urlshortener.testsupport.TestUtil.extractFilePart;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
@@ -38,27 +38,26 @@ public class UrlFactoryImplTest {
     }
 
     @Test
-    public void shouldReturnNumbersBelongingToSequence_whenCreateWithSequenceNumberPath_givenValidUrl() throws MalformedURLException {
+    public void shouldReturnNumbersBelongingToSequence_whenCreateWithSequenceNumberPath_givenValidUrl() {
         // given
-        URL givenUrl = createUrl();
+        String givenUrl = createUrlString();
 
         // when
-        List<URL> resultedList = Stream.generate(() -> urlFactory.createWithSequenceNumberPath(givenUrl))
+        List<String> resultedList = Stream.generate(() -> urlFactory.createWithSequenceNumberPath(givenUrl))
                 .limit(NUMBER_OF_INVOCATIONS)
                 .collect(Collectors.toList());
 
         // then
         resultedList.forEach(TestUtil::checkProtocolAndHost);
         checkNumberSequence(resultedList.stream()
-                .map(url -> Long.valueOf(url.getFile().substring(1)))
+                .map(url -> Long.valueOf(extractFilePart(url)))
                 .collect(Collectors.toList()));
     }
 
     @Test
-    public void shouldThrowIllegalArgumentExceptionWithUrlFileSegmentCannotBeEmptyMsg_whenCreateWithSequenceNumberPath_givenUrlWithEmptyFileSegment()
-            throws MalformedURLException {
+    public void shouldThrowIllegalArgumentExceptionWithUrlFileSegmentCannotBeEmptyMsg_whenCreateWithSequenceNumberPath_givenUrlWithEmptyFileSegment() {
         // given
-        URL url = createUrlWithEmptyFileSegment();
+        String url = createUrlStringWithEmptyFileSegment();
 
         // when
         IllegalArgumentException exception = assertThrows(IllegalArgumentException.class,
@@ -69,10 +68,20 @@ public class UrlFactoryImplTest {
     }
 
     @Test
-    public void shouldThrowIllegalArgumentExceptionWithUrlFileSegmentCannotBeEmptyMsg_whenCreateWithSequenceNumberPath_givenUrlWithBlankFileSegment()
-            throws MalformedURLException {
+    public void shouldThrowIllegalArgumentExceptionWithInvalidUrlMsg_whenGenerate_givenInvalidUrl() {
+        // when
+        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class,
+                () -> urlFactory.createWithSequenceNumberPath(INVALID_URL_STRING));
+
+        // then
+        assertEquals(INVALID_URL_FORMAT_MSG, exception.getMessage());
+        assertEquals(MalformedURLException.class, exception.getCause().getClass());
+    }
+
+    @Test
+    public void shouldThrowIllegalArgumentExceptionWithUrlFileSegmentCannotBeEmptyMsg_whenCreateWithSequenceNumberPath_givenUrlWithBlankFileSegment() {
         // given
-        URL url = createUrlWithBlankFileSegment();
+        String url = createUrlStringWithBlankFileSegment();
 
         // when
         IllegalArgumentException exception = assertThrows(IllegalArgumentException.class,

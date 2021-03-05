@@ -20,14 +20,18 @@ public class UrlFactoryImpl implements UrlFactory {
 
     private final SequentialNumberGenerator sequentialNumberGenerator = SequentialNumberGenerator.getInstance();
 
-    @Override
-    public URL createWithSequenceNumberPath(URL originalUrl) {
-        checkURL(originalUrl);
+    private final StringToUrlConverter urlConverter = new StringToUrlConverter();
 
-        return UrlBuilder.from(originalUrl)
+    @Override
+    public String createWithSequenceNumberPath(String urlString) {
+        requireNonNull(urlString, URL_CANNOT_BE_NULL_MSG);
+        URL url = urlConverter.convert(urlString);
+        checkURL(url);
+
+        return UrlBuilder.from(url)
                 .host(SHORTENED_HOST)
                 .file(precedeWithSlash(String.valueOf(sequentialNumberGenerator.nextValue())))
-                .build();
+                .build().toString();
     }
 
     /**
@@ -36,7 +40,6 @@ public class UrlFactoryImpl implements UrlFactory {
      * @param url {@link URL} to check
      */
     private void checkURL(URL url) {
-        requireNonNull(url, URL_CANNOT_BE_NULL_MSG);
         if (url.getFile().isBlank()) {
             throw new IllegalArgumentException(URL_FILE_SEGMENT_CANNOT_BE_EMPTY_MSG);
         }

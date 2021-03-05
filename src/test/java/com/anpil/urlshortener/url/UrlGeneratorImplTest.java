@@ -1,35 +1,37 @@
 package com.anpil.urlshortener.url;
 
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.net.MalformedURLException;
-import java.net.URL;
 
 import static com.anpil.urlshortener.testsupport.TestConstant.*;
-import static com.anpil.urlshortener.testsupport.TestUtil.checkAlphanumericString;
-import static com.anpil.urlshortener.testsupport.TestUtil.checkProtocolAndHost;
+import static com.anpil.urlshortener.testsupport.TestUtil.*;
 import static org.junit.jupiter.api.Assertions.*;
 
 public class UrlGeneratorImplTest {
 
-    private static URL givenUrl;
+    private static String givenUrlString;
     private UrlGeneratorImpl urlGenerator;
 
+    @BeforeAll
+    public static void setUpClass() {
+        givenUrlString = createUrlString();
+    }
+
     @BeforeEach
-    public void setUp() throws MalformedURLException {
+    public void setUp() {
         urlGenerator = new UrlGeneratorImpl();
-        givenUrl = createUrl();
     }
 
     @Test
-    public void shouldReturnGeneratedSeoUrl_whenGenerate_givenValidUrlAndSeoKeywordOfProperLength()
-            throws MalformedURLException {
+    public void shouldReturnGeneratedSeoUrl_whenGenerate_givenValidUrlAndSeoKeywordOfProperLength() {
         // given
-        URL expectedUrl = new URL(PROTOCOL, EXPECTED_HOST, "/" + VALID_SEO_KEYWORD);
+        String expectedUrl = createExpectedUrlString(VALID_SEO_KEYWORD);
 
         // when
-        URL actualUrl = urlGenerator.generateBySeoKeyword(givenUrl, VALID_SEO_KEYWORD);
+        String actualUrl = urlGenerator.generateBySeoKeyword(givenUrlString, VALID_SEO_KEYWORD);
 
         // then
         assertEquals(expectedUrl, actualUrl);
@@ -42,21 +44,20 @@ public class UrlGeneratorImplTest {
 
         // when
         IllegalArgumentException exception = assertThrows(IllegalArgumentException.class,
-                () -> urlGenerator.generateBySeoKeyword(givenUrl, seoKeyword));
+                () -> urlGenerator.generateBySeoKeyword(givenUrlString, seoKeyword));
 
         // then
         assertEquals(SEO_KEYWORD_TOO_LONG_MSG, exception.getMessage());
     }
 
     @Test
-    public void shouldReturnGeneratedSeoUrl_whenGenerate_givenValidUrlAndSeoKeywordWithOneCharacter()
-            throws MalformedURLException {
+    public void shouldReturnGeneratedSeoUrl_whenGenerate_givenValidUrlAndSeoKeywordWithOneCharacter() {
         // given
         String seoKeyword = "a";
-        URL expectedUrl = new URL(PROTOCOL, EXPECTED_HOST, "/" + seoKeyword);
+        String expectedUrl = createExpectedUrlString(seoKeyword);
 
         // when
-        URL actualUrl = urlGenerator.generateBySeoKeyword(givenUrl, seoKeyword);
+        String actualUrl = urlGenerator.generateBySeoKeyword(givenUrlString, seoKeyword);
 
         // then
         assertEquals(expectedUrl, actualUrl);
@@ -69,7 +70,7 @@ public class UrlGeneratorImplTest {
 
         // when
         IllegalArgumentException exception = assertThrows(IllegalArgumentException.class,
-                () -> urlGenerator.generateBySeoKeyword(givenUrl, seoKeyword));
+                () -> urlGenerator.generateBySeoKeyword(givenUrlString, seoKeyword));
 
         // then
         assertEquals(SEO_KEYWORD_CANNOT_BE_EMPTY_MSG, exception.getMessage());
@@ -82,7 +83,7 @@ public class UrlGeneratorImplTest {
 
         // when
         IllegalArgumentException exception = assertThrows(IllegalArgumentException.class,
-                () -> urlGenerator.generateBySeoKeyword(givenUrl, seoKeyword));
+                () -> urlGenerator.generateBySeoKeyword(givenUrlString, seoKeyword));
 
         // then
         assertEquals(SEO_KEYWORD_CANNOT_BE_EMPTY_MSG, exception.getMessage());
@@ -95,7 +96,7 @@ public class UrlGeneratorImplTest {
 
         // when
         IllegalArgumentException exception = assertThrows(IllegalArgumentException.class,
-                () -> urlGenerator.generateBySeoKeyword(givenUrl, seoKeyword));
+                () -> urlGenerator.generateBySeoKeyword(givenUrlString, seoKeyword));
 
         // then
         assertEquals(SEO_KEYWORD_WRONG_FORMAT_MSG, exception.getMessage());
@@ -108,7 +109,7 @@ public class UrlGeneratorImplTest {
 
         // when
         IllegalArgumentException exception = assertThrows(IllegalArgumentException.class,
-                () -> urlGenerator.generateBySeoKeyword(givenUrl, seoKeyword));
+                () -> urlGenerator.generateBySeoKeyword(givenUrlString, seoKeyword));
 
         // then
         assertEquals(SEO_KEYWORD_WRONG_FORMAT_MSG, exception.getMessage());
@@ -121,7 +122,7 @@ public class UrlGeneratorImplTest {
 
         // when
         IllegalArgumentException exception = assertThrows(IllegalArgumentException.class,
-                () -> urlGenerator.generateBySeoKeyword(givenUrl, seoKeyword));
+                () -> urlGenerator.generateBySeoKeyword(givenUrlString, seoKeyword));
 
         // then
         assertEquals(SEO_KEYWORD_WRONG_FORMAT_MSG, exception.getMessage());
@@ -131,7 +132,7 @@ public class UrlGeneratorImplTest {
     public void shouldThrowNullPointerExceptionWithSeoKeywordCannotBeNullMsg_whenGenerate_givenValidUrlAndNullSeoKeyword() {
         // when
         NullPointerException exception =
-                assertThrows(NullPointerException.class, () -> urlGenerator.generateBySeoKeyword(givenUrl, null));
+                assertThrows(NullPointerException.class, () -> urlGenerator.generateBySeoKeyword(givenUrlString, null));
 
         // then
         assertEquals(SEO_KEYWORD_CANNOT_BE_NULL_MSG, exception.getMessage());
@@ -148,10 +149,20 @@ public class UrlGeneratorImplTest {
     }
 
     @Test
-    public void shouldThrowIllegalArgumentExceptionWithUrlFileSegmentCannotBeEmptyMsg_whenGenerate_givenUrlWithEmptyFileSegment()
-            throws MalformedURLException {
+    public void shouldThrowIllegalArgumentExceptionWithInvalidUrlMsg_whenGenerate_givenInvalidUrl() {
+        // when
+        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class,
+                () -> urlGenerator.generateBySeoKeyword(INVALID_URL_STRING, VALID_SEO_KEYWORD));
+
+        // then
+        assertEquals(INVALID_URL_FORMAT_MSG, exception.getMessage());
+        assertEquals(MalformedURLException.class, exception.getCause().getClass());
+    }
+
+    @Test
+    public void shouldThrowIllegalArgumentExceptionWithUrlFileSegmentCannotBeEmptyMsg_whenGenerate_givenUrlWithEmptyFileSegment() {
         // given
-        URL url = createUrlWithEmptyFileSegment();
+        String url = createUrlStringWithEmptyFileSegment();
 
         // when
         IllegalArgumentException exception = assertThrows(IllegalArgumentException.class,
@@ -162,10 +173,9 @@ public class UrlGeneratorImplTest {
     }
 
     @Test
-    public void shouldThrowIllegalArgumentExceptionWithUrlFileSegmentCannotBeEmptyMsg_whenGenerate_givenUrlWithBlankFileSegment()
-            throws MalformedURLException {
+    public void shouldThrowIllegalArgumentExceptionWithUrlFileSegmentCannotBeEmptyMsg_whenGenerate_givenUrlWithBlankFileSegment() {
         // given
-        URL url = createUrlWithBlankFileSegment();
+        String url = createUrlStringWithBlankFileSegment();
 
         // when
         IllegalArgumentException exception = assertThrows(IllegalArgumentException.class,
@@ -186,27 +196,36 @@ public class UrlGeneratorImplTest {
     }
 
     @Test
-    public void shouldReturnNonRepeatableAlphanumericStringsOfValidLength_whenGenerateWithRandomPath_givenNothing() {
+    public void shouldReturnNonRepeatableAlphanumericStringsOfValidLength_whenGenerateWithRandomPath_givenValidUrl() {
         // when
-        URL firstInvocationResult = urlGenerator.generateWithRandomPath(givenUrl);
-        URL secondInvocationResult = urlGenerator.generateWithRandomPath(givenUrl);
+        String firstInvocationResult = urlGenerator.generateWithRandomPath(givenUrlString);
+        String secondInvocationResult = urlGenerator.generateWithRandomPath(givenUrlString);
 
         // then
         checkProtocolAndHost(firstInvocationResult);
         checkProtocolAndHost(secondInvocationResult);
-        String firstInvocationResultPath = firstInvocationResult.getFile().substring(1); // without "/" at the beginning
-        String secondInvocationResultPath =
-                secondInvocationResult.getFile().substring(1); // without "/" at the beginning
+        String firstInvocationResultPath = extractFilePart(firstInvocationResult);
+        String secondInvocationResultPath = extractFilePart(secondInvocationResult);
         checkAlphanumericString(firstInvocationResultPath);
         checkAlphanumericString(secondInvocationResultPath);
         assertNotEquals(firstInvocationResultPath, secondInvocationResultPath);
     }
 
     @Test
-    public void shouldThrowIllegalArgumentExceptionWithUrlFileSegmentCannotBeEmptyMsg_whenGenerateWithRandomPath_givenUrlWithEmptyFileSegment()
-            throws MalformedURLException {
+    public void shouldThrowIllegalArgumentExceptionWithInvalidUrlMsg_whenGenerateWithRandomPath_givenInvalidUrl() {
+        // when
+        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class,
+                () -> urlGenerator.generateWithRandomPath(INVALID_URL_STRING));
+
+        // then
+        assertEquals(INVALID_URL_FORMAT_MSG, exception.getMessage());
+        assertEquals(MalformedURLException.class, exception.getCause().getClass());
+    }
+
+    @Test
+    public void shouldThrowIllegalArgumentExceptionWithUrlFileSegmentCannotBeEmptyMsg_whenGenerateWithRandomPath_givenUrlWithEmptyFileSegment() {
         // given
-        URL url = createUrlWithEmptyFileSegment();
+        String url = createUrlStringWithEmptyFileSegment();
 
         // when
         IllegalArgumentException exception =
@@ -217,10 +236,9 @@ public class UrlGeneratorImplTest {
     }
 
     @Test
-    public void shouldThrowIllegalArgumentExceptionWithUrlFileSegmentCannotBeEmptyMsg_whenGenerateWithRandomPath_givenUrlWithBlankFileSegment()
-            throws MalformedURLException {
+    public void shouldThrowIllegalArgumentExceptionWithUrlFileSegmentCannotBeEmptyMsg_whenGenerateWithRandomPath_givenUrlWithBlankFileSegment() {
         // given
-        URL url = createUrlWithBlankFileSegment();
+        String url = createUrlStringWithBlankFileSegment();
 
         // when
         IllegalArgumentException exception =

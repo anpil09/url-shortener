@@ -3,7 +3,6 @@ package com.anpil.urlshortener.url;
 import com.anpil.urlshortener.generator.RandomStringGenerator;
 import com.anpil.urlshortener.url.builder.UrlBuilder;
 
-import java.net.MalformedURLException;
 import java.net.URL;
 
 import static com.anpil.urlshortener.constant.AppConfig.*;
@@ -20,8 +19,12 @@ public class UrlGeneratorImpl implements UrlGenerator {
 
     private final RandomStringGenerator stringGenerator = new RandomStringGenerator();
 
+    private final StringToUrlConverter urlConverter = new StringToUrlConverter();
+
     @Override
     public String generateBySeoKeyword(String urlString, String seoKeyword) {
+        requireNonNull(seoKeyword, SEO_KEYWORD_CANNOT_BE_NULL_MSG);
+        checkSeoKeywordFormat(seoKeyword);
         URL url = checkIfValidAndConvertToURL(urlString);
 
         return UrlBuilder.from(url).host(SHORTENED_HOST).file(precedeWithSlash(seoKeyword)).build().toString();
@@ -38,24 +41,22 @@ public class UrlGeneratorImpl implements UrlGenerator {
                 .toString();
     }
 
+    /**
+     * Checks the format of the given {@link String} representing a URL and converts it to {@link URL}
+     *
+     * @param urlString string to check
+     * @return converted {@link URL}
+     */
     private URL checkIfValidAndConvertToURL(String urlString) {
         requireNonNull(urlString, URL_CANNOT_BE_NULL_MSG);
 
-        URL url = convertToURL(urlString);
+        URL url = urlConverter.convert(urlString);
 
         if (url.getFile().isBlank()) {
             throw new IllegalArgumentException(URL_FILE_SEGMENT_CANNOT_BE_EMPTY_MSG);
         }
 
         return url;
-    }
-
-    private URL convertToURL(String urlString) {
-        try {
-            return new URL(urlString);
-        } catch (MalformedURLException e) {
-            throw new IllegalArgumentException(INVALID_URL_FORMAT_MSG, e);
-        }
     }
 
     /**

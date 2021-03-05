@@ -1,16 +1,16 @@
 package com.anpil.urlshortener.testsupport;
 
-import java.net.URL;
 import java.util.List;
 
-import static com.anpil.urlshortener.testsupport.TestConstant.EXPECTED_HOST;
-import static com.anpil.urlshortener.testsupport.TestConstant.PROTOCOL;
+import static com.anpil.urlshortener.testsupport.TestConstant.EXPECTED_PROTOCOL_AND_HOST;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class TestUtil {
 
     private static final int EXPECTED_STRING_LENGTH = 4;
+
+    private static final char SLASH = '/';
 
     public static void checkAlphanumericString(String result) {
         assertEquals(EXPECTED_STRING_LENGTH, result.length());
@@ -25,14 +25,17 @@ public class TestUtil {
         }
     }
 
+    public static void checkProtocolAndHost(String url) {
+        assertTrue(url.startsWith(EXPECTED_PROTOCOL_AND_HOST));
+    }
+
+    public static String extractFilePart(String url) {
+        return url.substring(url.lastIndexOf(SLASH) + 1);
+    }
+
     private static boolean isAsciiLetterOrDigit(char character) {
         return (character >= 'a' && character <= 'z') || (character >= 'A' && character <= 'Z') ||
                 (character >= '0' && character <= '9');
-    }
-
-    public static void checkProtocolAndHost(URL result) {
-        assertEquals(PROTOCOL, result.getProtocol());
-        assertEquals(EXPECTED_HOST, result.getHost());
     }
 
 }
