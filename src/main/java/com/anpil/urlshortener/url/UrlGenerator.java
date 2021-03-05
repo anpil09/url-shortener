@@ -10,21 +10,21 @@ import java.net.URL;
 public interface UrlGenerator {
 
     /**
-     * Generates shortened {@link URL} by replacing original host with a short host and file with a seoKeyword.
+     * Generates shortened URL by replacing original host with a short host and file with a seoKeyword.
      *
-     * @param url        Original {@link URL} to shorten
-     * @param seoKeyword Alphanumeric phrase to replace {@link URL}'s file with. "-" characters are allowed to
+     * @param url        Original in {@link String} form to shorten
+     * @param seoKeyword Alphanumeric phrase to replace URL's file with. "-" characters are allowed to
      *                   separate separate words in the seoKeyword
-     * @return Shortened {@link URL}
+     * @return Shortened URL
      */
-    URL generateBySeoKeyword(URL url, String seoKeyword);
+    String generateBySeoKeyword(String url, String seoKeyword);
 
     /**
-     * Generates shortened {@link URL} by replacing original file with a sequence of 4 random alphanumeric characters
+     * Generates shortened URL by replacing original file with a sequence of 4 random alphanumeric characters
      *
-     * @param url Original {@link URL}
-     * @return Shortened {@link URL}
+     * @param url Original URL
+     * @return Shortened URL
      */
-    URL generateWithRandomPath(URL url);
+    String generateWithRandomPath(String url);
 
 }

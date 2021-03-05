@@ -3,6 +3,7 @@ package com.anpil.urlshortener.url;
 import com.anpil.urlshortener.generator.RandomStringGenerator;
 import com.anpil.urlshortener.url.builder.UrlBuilder;
 
+import java.net.MalformedURLException;
 import java.net.URL;
 
 import static com.anpil.urlshortener.constant.AppConfig.*;
@@ -20,40 +21,40 @@ public class UrlGeneratorImpl implements UrlGenerator {
     private final RandomStringGenerator stringGenerator = new RandomStringGenerator();
 
     @Override
-    public URL generateBySeoKeyword(URL url, String seoKeyword) {
-        checkParameters(url, seoKeyword);
+    public String generateBySeoKeyword(String urlString, String seoKeyword) {
+        URL url = checkIfValidAndConvertToURL(urlString);
 
-        return UrlBuilder.from(url).host(SHORTENED_HOST).file(precedeWithSlash(seoKeyword)).build();
+        return UrlBuilder.from(url).host(SHORTENED_HOST).file(precedeWithSlash(seoKeyword)).build().toString();
     }
 
     @Override
-    public URL generateWithRandomPath(URL url) {
-        checkURL(url);
+    public String generateWithRandomPath(String urlString) {
+        URL url = checkIfValidAndConvertToURL(urlString);
 
-        return UrlBuilder.from(url).host(SHORTENED_HOST).file(precedeWithSlash(stringGenerator.generate())).build();
+        return UrlBuilder.from(url)
+                .host(SHORTENED_HOST)
+                .file(precedeWithSlash(stringGenerator.generate()))
+                .build()
+                .toString();
     }
 
-    /**
-     * Checks parameters for the generateBySeoKeyword method (url and seoKeyword).
-     *
-     * @param url        url to check
-     * @param seoKeyword SEO keyword to check
-     */
-    private void checkParameters(URL url, String seoKeyword) {
-        checkURL(url);
-        requireNonNull(seoKeyword, SEO_KEYWORD_CANNOT_BE_NULL_MSG);
-        checkSeoKeywordFormat(seoKeyword);
-    }
+    private URL checkIfValidAndConvertToURL(String urlString) {
+        requireNonNull(urlString, URL_CANNOT_BE_NULL_MSG);
 
-    /**
-     * Checks the given {@link URL} to be not null and to contain non-empty and non-blank file segment.
-     *
-     * @param url {@link URL} to check
-     */
-    private void checkURL(URL url) {
-        requireNonNull(url, URL_CANNOT_BE_NULL_MSG);
+        URL url = convertToURL(urlString);
+
         if (url.getFile().isBlank()) {
             throw new IllegalArgumentException(URL_FILE_SEGMENT_CANNOT_BE_EMPTY_MSG);
+        }
+
+        return url;
+    }
+
+    private URL convertToURL(String urlString) {
+        try {
+            return new URL(urlString);
+        } catch (MalformedURLException e) {
+            throw new IllegalArgumentException(INVALID_URL_FORMAT_MSG, e);
         }
     }
 
